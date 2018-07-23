@@ -48,6 +48,7 @@ class TwigSpreadsheetExtension extends \Twig_Extension
     {
         return [
             new \Twig_SimpleFunction('xlsmergestyles', [$this, 'mergeStyles']),
+            new \Twig_SimpleFunction('xlsrowindex', [$this, 'getRowIndex'], ['needs_context' => true]),
         ];
     }
 
@@ -93,10 +94,18 @@ class TwigSpreadsheetExtension extends \Twig_Extension
      */
     public function mergeStyles(array $style1, array $style2): array
     {
-        if (!is_array($style1) || !is_array($style2)) {
+        if (!\is_array($style1) || !\is_array($style2)) {
             throw new \Twig_Error_Runtime('The xlsmergestyles function only works with arrays.');
         }
 
         return array_merge_recursive($style1, $style2);
+    }
+
+    /**
+     * @param array $context
+     * @return int|null
+     */
+    public function getRowIndex(array $context) {
+        return $context[PhpSpreadsheetWrapper::INSTANCE_KEY]->getSheetRow();
     }
 }
